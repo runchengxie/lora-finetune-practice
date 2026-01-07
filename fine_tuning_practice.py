@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -94,11 +95,27 @@ def build_sft_config(settings: TrainSettings, device: str) -> SFTConfig:
         fp16=device == "cuda",
         push_to_hub=False,
         report_to="none",
+        packing=settings.packing,
+        max_seq_length=settings.max_seq_length,
+        dataset_kwargs={"add_special_tokens": False, "append_concat_token": False},
     )
-    try:
-        return SFTConfig(**base_kwargs, chat_template_path=settings.chat_template_path)
-    except TypeError:
-        return SFTConfig(**base_kwargs)
+    sft_kwargs = dict(base_kwargs, chat_template_path=settings.chat_template_path)
+    while True:
+        try:
+            return SFTConfig(**sft_kwargs)
+        except TypeError as exc:
+            match = re.search(r"unexpected keyword argument[s]?:? '([^']+)'", str(exc))
+            if not match:
+                raise
+            bad_key = match.group(1)
+            if bad_key == "max_seq_length" and "max_seq_length" in sft_kwargs:
+                sft_kwargs.pop("max_seq_length", None)
+                sft_kwargs["max_length"] = settings.max_seq_length
+                continue
+            if bad_key in sft_kwargs:
+                sft_kwargs.pop(bad_key)
+                continue
+            raise
 
 
 def load_model_and_tokenizer(settings: TrainSettings, device: str):
@@ -135,18 +152,11 @@ def build_trainer(
         args=sft_config,
         train_dataset=train_dataset,
         peft_config=peft_config,
-        max_seq_length=settings.max_seq_length,
-        packing=settings.packing,
-        dataset_kwargs={"add_special_tokens": False, "append_concat_token": False},
     )
     try:
         return SFTTrainer(processing_class=tokenizer, **base_kwargs)
     except TypeError:
-        try:
-            return SFTTrainer(tokenizer=tokenizer, **base_kwargs)
-        except TypeError:
-            base_kwargs.pop("dataset_kwargs", None)
-            return SFTTrainer(tokenizer=tokenizer, **base_kwargs)
+        return SFTTrainer(tokenizer=tokenizer, **base_kwargs)
 
 
 def merge_adapter(output_dir: str) -> None:
