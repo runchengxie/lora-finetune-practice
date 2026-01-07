@@ -198,13 +198,13 @@ LoRA 配置，告诉加载器“这套 adapter 是怎么训练出来的”（例
 使用训练输出目录做推理：
 
 ```bash
-python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "请用一句话解释什么是LoRA。"
+python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "What is LoRA?"
 ```
 
 如果你使用 `uv` 管理环境，建议用 `uv run` 来确保依赖就绪：
 
 ```bash
-uv run python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "请用一句话解释什么是LoRA。"
+uv run python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "What is LoRA?"
 ```
 
 下面的示例同理，前面加 `uv run` 即可。
