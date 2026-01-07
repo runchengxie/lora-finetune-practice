@@ -121,6 +121,10 @@ cp .envrc.example .envrc
 
 ```
 HF_TOKEN=hf_xxx
+HF_REPO_ID=your-username/your-repo
+# 或者
+# HF_USERNAME=your-username
+# HF_REPO_NAME=your-repo
 ```
 
 1) 如果你用 direnv：
@@ -292,6 +296,13 @@ python scripts/upload_lora_to_hub.py \
 ```bash
 uv run python scripts/upload_lora_to_hub.py \
   --repo-id your-username/your-repo \
+  --local-dir outputs/SmolLM2-FT-MyDataset
+```
+
+如果你已经在 `.env` 里设置了 `HF_REPO_ID`（或 `HF_USERNAME` + `HF_REPO_NAME`），可以省略 `--repo-id`：
+
+```bash
+python scripts/upload_lora_to_hub.py \
   --local-dir outputs/SmolLM2-FT-MyDataset
 ```
 
