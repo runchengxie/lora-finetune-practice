@@ -106,6 +106,8 @@ def build_sft_config(settings: TrainSettings, device: str) -> SFTConfig:
         save_strategy=settings.save_strategy,
         bf16=False,
         fp16=device == "cuda",
+        no_cuda=device != "cuda",
+        use_cpu=device != "cuda",
         push_to_hub=False,
         report_to="none",
         packing=settings.packing,
