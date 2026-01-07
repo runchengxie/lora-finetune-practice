@@ -237,6 +237,7 @@ def main() -> None:
 
     trainer.train()
     trainer.save_model()
+    tokenizer.save_pretrained(settings.output_dir)
 
     if settings.merge_adapter:
         merge_adapter(settings.output_dir)
