@@ -23,7 +23,7 @@ class TrainSettings:
     chat_template_path: str = "HuggingFaceTB/SmolLM2-135M-Instruct"
     dataset_path: str = "HuggingFaceTB/smoltalk"
     dataset_name: str = "everyday-conversations"
-    output_dir: str = "SmolLM2-FT-MyDataset"
+    output_dir: str = "outputs/SmolLM2-FT-MyDataset"
     max_seq_length: int = 512
     train_subset_size: int = 2000
     per_device_train_batch_size: int = 1
@@ -62,8 +62,6 @@ def resolve_device() -> str:
             )
         else:
             return "cuda"
-    if torch.backends.mps.is_available():
-        return "mps"
     return "cpu"
 
 

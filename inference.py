@@ -28,8 +28,6 @@ def resolve_device() -> str:
             )
         else:
             return "cuda"
-    if torch.backends.mps.is_available():
-        return "mps"
     return "cpu"
 
 
@@ -80,7 +78,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--model-dir",
-        default="SmolLM2-FT-MyDataset",
+        default="outputs/SmolLM2-FT-MyDataset",
         help="Path to the fine-tuned output directory.",
     )
     parser.add_argument(
@@ -98,7 +96,7 @@ def main() -> None:
     parser.add_argument("--top-p", type=float, default=None)
     parser.add_argument(
         "--device",
-        choices=["auto", "cpu", "cuda", "mps"],
+        choices=["auto", "cpu", "cuda"],
         default="auto",
         help="Force a device or let the script decide automatically.",
     )

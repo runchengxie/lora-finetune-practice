@@ -12,6 +12,7 @@
 
 * Python 3.9+（建议 3.10+）
 * 可选 GPU（CUDA 能显著加速，老卡只要支持 fp16 也能试）
+* 设备支持：CPU / CUDA（MPS 不参与）
 
 ## 安装依赖
 
@@ -22,11 +23,22 @@ pip install -U pip
 pip install -e .
 ```
 
+如需 CUDA，请先按 PyTorch 官方说明安装对应版本，再执行上面的安装命令。
+
 如果需要运行测试：
 
 ```bash
 pip install -e ".[test]"
 ```
+
+## 项目结构
+
+* `fine_tuning_practice.py`：训练主脚本
+* `inference.py`：推理脚本
+* `scripts/upload_lora_to_hub.py`：上传脚本
+* `scripts/run_tests.sh`：测试入口
+* `tests/`：单元测试
+* `outputs/`：训练输出默认目录（自动生成）
 
 ## Hugging Face Token（可选）
 
@@ -66,7 +78,7 @@ python fine_tuning_practice.py
 1. 训练过程中按策略保存的 checkpoint（中间态）
 2. 训练结束 `trainer.save_model()` + `tokenizer.save_pretrained(...)` 保存的 最终产物（可用于推理/分享）
 
-输出目录名字来自 `TrainSettings.output_dir`，默认就是 `SmolLM2-FT-MyDataset`。
+输出目录名字来自 `TrainSettings.output_dir`，默认就是 `outputs/SmolLM2-FT-MyDataset`。
 
 ### 1) `adapter_model.safetensors`
 
@@ -161,6 +173,45 @@ LoRA 配置，告诉加载器“这套 adapter 是怎么训练出来的”（例
 ## 简单推理示例（可选）
 
 将 `TrainSettings.run_inference` 设为 `True`，训练后会用内置的几条提示语跑一次推理，便于快速验收效果。
+
+## 推理（脚本）
+
+使用训练输出目录做推理：
+
+```bash
+python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "请用一句话解释什么是LoRA。"
+```
+
+多条提示语可以重复 `--prompt`：
+
+```bash
+python inference.py \
+  --model-dir outputs/SmolLM2-FT-MyDataset \
+  --prompt "What is LoRA?" \
+  --prompt "Explain gradient accumulation briefly."
+```
+
+如果目录里缺 tokenizer 文件，可以补 `--base-model`：
+
+```bash
+python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --base-model HuggingFaceTB/SmolLM2-135M
+```
+
+## 上传到 Hugging Face Hub（脚本）
+
+先确保 `HF_TOKEN` 已配置（见上面的 Token 配置），再执行：
+
+```bash
+python scripts/upload_lora_to_hub.py \
+  --repo-id your-username/your-repo \
+  --local-dir outputs/SmolLM2-FT-MyDataset
+```
+
+常用选项：
+
+* `--exclude-checkpoints`：不上传 `checkpoint-*`，节省空间
+* `--public`：创建公开仓库（默认私有）
+* `--commit-message`：自定义提交说明
 
 ## 运行测试
 

@@ -211,3 +211,4 @@ full_project_source.txt
 
 # Training outputs
 /SmolLM2-FT-MyDataset/
+/outputs/
