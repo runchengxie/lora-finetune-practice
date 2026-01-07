@@ -48,7 +48,20 @@ class TrainSettings:
 
 def resolve_device() -> str:
     if torch.cuda.is_available():
-        return "cuda"
+        major, minor = torch.cuda.get_device_capability(0)
+        arch = f"sm_{major}{minor}"
+        try:
+            arch_list = torch.cuda.get_arch_list()
+        except Exception:
+            arch_list = []
+        if arch_list and not any(entry.startswith(arch) for entry in arch_list):
+            print(
+                "[warn] CUDA device capability "
+                f"{major}.{minor} ({arch}) is not supported by this PyTorch build; "
+                "falling back to CPU."
+            )
+        else:
+            return "cuda"
     if torch.backends.mps.is_available():
         return "mps"
     return "cpu"
