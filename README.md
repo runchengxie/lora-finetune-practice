@@ -23,12 +23,25 @@ pip install -U pip
 pip install -e .
 ```
 
+如果使用 `uv`：
+
+```bash
+uv venv
+uv sync
+```
+
 如需 CUDA，请先按 PyTorch 官方说明安装对应版本，再执行上面的安装命令。
 
 如果需要运行测试：
 
 ```bash
 pip install -e ".[test]"
+```
+
+使用 `uv` 安装测试依赖：
+
+```bash
+uv sync --extra test
 ```
 
 ## 项目结构
@@ -67,6 +80,12 @@ direnv allow
 
 ```bash
 python fine_tuning_practice.py
+```
+
+如果你使用 `uv` 管理环境：
+
+```bash
+uv run python fine_tuning_practice.py
 ```
 
 如果要调整超参，直接修改 `fine_tuning_practice.py` 里的 `TrainSettings` 默认值即可。
@@ -182,6 +201,14 @@ LoRA 配置，告诉加载器“这套 adapter 是怎么训练出来的”（例
 python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "请用一句话解释什么是LoRA。"
 ```
 
+如果你使用 `uv` 管理环境，建议用 `uv run` 来确保依赖就绪：
+
+```bash
+uv run python inference.py --model-dir outputs/SmolLM2-FT-MyDataset --prompt "请用一句话解释什么是LoRA。"
+```
+
+下面的示例同理，前面加 `uv run` 即可。
+
 多条提示语可以重复 `--prompt`：
 
 ```bash
@@ -207,6 +234,14 @@ python scripts/upload_lora_to_hub.py \
   --local-dir outputs/SmolLM2-FT-MyDataset
 ```
 
+如果你使用 `uv` 管理环境：
+
+```bash
+uv run python scripts/upload_lora_to_hub.py \
+  --repo-id your-username/your-repo \
+  --local-dir outputs/SmolLM2-FT-MyDataset
+```
+
 常用选项：
 
 * `--exclude-checkpoints`：不上传 `checkpoint-*`，节省空间
@@ -217,6 +252,12 @@ python scripts/upload_lora_to_hub.py \
 
 ```bash
 ./scripts/run_tests.sh
+```
+
+如果你使用 `uv` 管理环境：
+
+```bash
+uv run ./scripts/run_tests.sh
 ```
 
 ## 缓存位置说明
