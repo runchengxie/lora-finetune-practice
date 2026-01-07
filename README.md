@@ -53,6 +53,59 @@ uv sync --extra test
 * `tests/`：单元测试
 * `outputs/`：训练输出默认目录（自动生成）
 
+## 基座模型说明
+
+本项目默认使用 `HuggingFaceTB/SmolLM2-135M`，它是一个 Llama 风格的超小号 base 预训练模型（约 135M 参数）。
+
+* **定位**：轻量、好跑、适合 LoRA 练手或流程验证
+* **语言偏好**：主要面向英文，中文任务通常需要更充分的数据或更大模型
+* **模型类型**：base（续写/补全风格），不是默认聊天指令模型
+* **上下文长度**：约 8K（配置里的 `max_position_embeddings=8192`）
+* **限制**：体量小，效果有限，适合作为教学/实验基座
+
+如果你希望对话风格更强的模型，可以考虑 `SmolLM2-135M-Instruct` 作为替代基座，但需要确保 tokenizer/chat 模板与推理脚本匹配。
+
+### 家族与版本
+
+* **SmolLM2 家族**：同系列还有 360M、1.7B 等更大版本
+* **Base vs Instruct**：本项目使用的是 base（续写/补全风格）；Instruct 是在 base 上做了指令对齐，聊天更自然
+
+### 规格摘要（来自模型配置）
+
+* **架构**：`LlamaForCausalLM`（decoder-only Transformer）
+* **参数规模**：约 135M
+* **层数**：30
+* **隐藏维度**：576
+* **注意力头**：9（KV 头 3，GQA）
+* **词表大小**：49,152
+* **RoPE**：`rope_theta=100000`
+* **权重精度**：配置标注为 bfloat16
+* **许可证**：Apache-2.0
+
+### 训练信息（模型卡摘要）
+
+* **预训练 token**：约 2T
+* **数据来源**：FineWeb-Edu、DCLM、The Stack 等
+* **训练硬件/框架**：64x H100 + nanotron（模型卡标注）
+
+### 使用提示
+
+* **语言偏好**：主要英文，中文任务一般需要更充分的中文数据
+* **模板一致性**：base 与 instruct 的 tokenizer/chat 模板不完全一致，推理时请确保匹配
+* **资源占用**：模型卡提供了 bf16 加载的内存占用示例，具体会因加载方式而异
+
+### 参考链接
+
+* 模型卡：`https://huggingface.co/HuggingFaceTB/SmolLM2-135M`
+* 配置文件：`https://huggingface.co/HuggingFaceTB/SmolLM2-135M/blob/main/config.json`
+
+### 推荐基座选择
+
+* **只想跑通流程/低资源机器**：`SmolLM2-135M`（默认）
+* **希望对话更自然**：`SmolLM2-135M-Instruct`（注意 tokenizer/chat 模板匹配）
+* **更高质量但资源更多**：`SmolLM2-360M` / `SmolLM2-1.7B`
+* **中文优先任务**：考虑更偏中文训练的基座模型（需要同步调整 tokenizer 与模板）
+
 ## Hugging Face Token（可选）
 
 公开数据集/模型可以不登录；需要访问私有资源时再配置即可。
