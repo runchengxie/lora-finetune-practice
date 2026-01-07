@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lora-finetune-practice"
+version = "0.1.0"
+description = "LoRA fine-tune practice on SmolLM2"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "accelerate",
+  "datasets",
+  "huggingface-hub",
+  "peft",
+  "torch",
+  "transformers",
+  "trl",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
